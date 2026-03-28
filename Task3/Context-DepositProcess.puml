@@ -1,0 +1,26 @@
+@startuml
+title Bank Standart Deposit Process Container Diagram
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(CallCenterOperator, "Call Center Operator", "Authorized operator.")
+Person(BackOfficeEmployee, "Back Office Employee", "Aa authorized employee of the bank Standart system.")
+Person(customer, "Customer", "Aa authorized customer of the internet bank Standart system.")
+System(BankStandartSystem, "Bank Standart System Environment", "Deposit process")
+
+Person(user, "User", "A not-authorized user.")
+
+System_Ext(ExtTelecomSystem, "External telecom system", "External API")
+
+Rel(CallCenterOperator, BankStandartSystem, "Подтверждение заявки")
+
+Rel(user, BankStandartSystem, "[https]\n/просмотр списка депозитных предложений\n/подача заявки")
+Rel(customer, BankStandartSystem, "[https]\n/просмотр списка депозитных предложений\n/просмотр списка персонализированных депозитных предложений\n/подача заявки")
+
+Rel(BackOfficeEmployee, BankStandartSystem,         "Управление ставками депозитов")
+
+Rel(BackOfficeEmployee, BankStandartSystem, "Подтверждение размещения депозита")
+
+Rel(BankStandartSystem, ExtTelecomSystem, "смс")
+
+@enduml
