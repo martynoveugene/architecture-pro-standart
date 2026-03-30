@@ -1,0 +1,80 @@
+@startuml
+title Bank Standart Credit Process Container Diagram
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(CallCenterOperator, "Call Center Operator", "Authorized operator.")
+Person(BackOfficeEmployee, "Back Office Employee", "Aa authorized employee of the bank Standart system.")
+Person(FrontOfficeEmployee, "Front Office Employee", "Aa authorized employee of the bank Standart system.")
+Person(customer, "Customer", "Aa authorized customer of the internet bank Standart system.")
+System(BankStandartSystem, "Bank Standart System Environment", "Credit process")
+
+Container_Boundary(BankStandartSystem, "Bank Standart System Environment") {
+
+    Container(InternetBank, "Интернет-банк", "ASP.NET MVC 4.5", "MS SQL")
+
+    Container(RateMaster, "RateMaster\nПриложение по управлению предложениями депозитов и кредитов", "Java/SpringBoot", "PostgreSQL")
+
+    Container_Boundary(CreditMicroservice, "Credit Microservice") {
+        Container(APICreditService, "API Credit Service", "Java/SpringBoot", "PostgreSQL")
+        ContainerDb(CreditDatabase, "CreditDatabase", "PostgreSQL", "Stores\n credit-proposal\n credit-application")
+    }
+
+    Container(BankSite, "Сайт банка", "React.js", "PHP")
+
+    Container(ABS, "АБС", "Delphi", "PL-SQL/Oracle")
+
+    ContainerDb(EventSystem, "[Kafka]", "Message Broker", "topics:\n credit-application-events\nsms-messages\n ...")
+
+    Container(CreditConsumer, "Credit Consumer", "Java/SpringBoot", "")
+    Container(CreditConveyor, "Кредитный конвейер", "BPM Platform", "Camunda")
+    Container(CreditScoring, "Система кредитного скоринга", "", "")
+
+    Container(SMSConsumer, "SMS Consumer", "Java/SpringBoot", "PostgreSQL")
+    Container(SMSgate, "СМС-шлюз", "", "")
+
+    Container(CallCenter, "Система кол-центра", "CRM-микросервисы", "React.js/Java Spring Boot/PostgreSQL")
+}
+
+Person(user, "User", "A not-authorized user.")
+
+System_Ext(ExtTelecomSystem, "External telecom system", "External API")
+System_Ext(ExtCreditHistoryBureau, "External Credit History Bureau", "External API")
+
+Rel(CallCenterOperator, CallCenter, "Звонки")
+
+Rel(user, BankSite, "[https]\n/просмотр списка кредитных предложений\n/подача заявки")
+Rel(customer, InternetBank, "[https]\n/просмотр списка кредитных предложений\n/просмотр списка персонализированных кредитных предложений\n/подача заявки")
+
+Rel(BackOfficeEmployee, RateMaster,       "Управление ставками кредитов")
+
+Rel(RateMaster,         APICreditService, "CRUD /api/credit/proposal/ordinary\n CRUD /api/credit/proposal/personal")
+Rel(InternetBank,       APICreditService, "GET/POST /api/credit/ordinary\n GET/POST /api/credit/personal\n PATCH /api/credit/confirm")
+Rel(BankSite,           APICreditService, "GET /api/credit/ordinary")
+Rel(CallCenter,         APICreditService, "GET /api/credit/ordinary")
+
+Rel_D(APICreditService,  CreditDatabase,  "Reads/Writes credit info")
+Rel_D(APICreditService,  EventSystem, "publishes\n credit-application-events\n sms-messages")
+
+Rel_D(EventSystem,    CreditConsumer, "consumes\n credit-application-events")
+Rel_D(CreditConsumer, CreditConveyor, "запрос оценки")
+Rel(CreditConveyor,   CreditScoring,  "запрос скоринга")
+Rel(CreditScoring,    ExtCreditHistoryBureau, "запрос кредитного отчета")
+
+Rel(FrontOfficeEmployee, ABS, "Оформление кредитной заявки")
+
+Rel(CreditConsumer, EventSystem, "publishes\n credit-result-events")
+
+Rel(ABS, EventSystem, "Debezium\n publishes\n credit-application-events\n sms-messages")
+Rel(EventSystem, ABS, "Kafka Connect Sink\n consumes\n credit-result-events")
+
+Rel(EventSystem, SMSConsumer, "consumes\n sms-messages")
+Rel(SMSConsumer, SMSgate, "отправка смс новым способом")
+Rel(ABS,         SMSgate, "отправка смс старым способом")
+Rel_D(SMSgate,   ExtTelecomSystem, "смс")
+
+
+'MovieDatabase -[hidden]down-> ExtOnlineCinema
+'PaymentDatabase -[hidden]down-> ExtPaymentSystem
+
+@enduml
