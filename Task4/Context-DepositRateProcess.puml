@@ -1,0 +1,20 @@
+@startuml
+title Bank Standart Rate Deposit Process Context Diagram
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(BackOfficeEmployee, "Back Office Employee", "Aa authorized employee of the bank Standart system.")
+System(BankStandartSystem, "Bank Standart System", "")
+System_Ext(SftpFileServer, "Sftp File Server", "")
+System_Ext(SftpFileServer, "Sftp File Server", "")
+System_Ext(ExternalCallCenter, "External Call Center System", "")
+
+Person(ExternalCallCenterOperator, "External Call Center Operator", "")
+
+Rel(BackOfficeEmployee, BankStandartSystem,         "Управление ставками депозитов")
+
+Rel_R(BankStandartSystem, SftpFileServer, "экспорт файла ставок")
+Rel(ExternalCallCenter, SftpFileServer, "импорт файла ставок")
+Rel(ExternalCallCenterOperator, ExternalCallCenter, "отображение ставок")
+
+@enduml

@@ -1,0 +1,39 @@
+@startuml
+title Bank Standart Rate Deposit Process Container Diagram
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(BackOfficeEmployee, "Back Office Employee", "Aa authorized employee of the bank Standart system.")
+System(BankStandartSystem, "Bank Standart System Environment", "")
+
+Container_Boundary(BankStandartSystem, "Bank Standart System Environment") {
+
+    Container(RateMaster, "RateMaster\nПриложение по управлению предложениями депозитов и кредитов", "Java/SpringBoot", "PostgreSQL")
+
+    Container_Boundary(DepositMicroservice, "Deposit Microservice") {
+        Container(APIDepositService, "API Deposit Service", "Java/SpringBoot", "PostgreSQL")
+        ContainerDb(DepositDatabase, "DepositDatabase", "PostgreSQL", "Stores\n deposit-proposal\n deposit-application")
+    }
+
+    ContainerDb(EventSystem, "[Kafka]", "Message Broker", "topics:\n deposit-rate-messages\n ...")
+
+    Container(RateConsumer, "Rate Consumer или\nKafka Connect SFTP Sink", "Java/SpringBoot", "")
+}
+
+System_Ext(SftpFileServer, "Sftp File Server", "")
+System_Ext(ExternalCallCenter, "External Call Center System", "")
+
+Person(ExternalCallCenterOperator, "External Call Center Operator", "")
+
+Rel(BackOfficeEmployee, RateMaster,         "Управление ставками депозитов")
+Rel(RateMaster, APIDepositService,         "CRUD /api/deposit/proposal/ordinary")
+
+Rel_D(APIDepositService,  DepositDatabase,  "Reads/Writes deposit info")
+Rel_D(APIDepositService,    EventSystem, "publishes\n deposit-rate-messages")
+
+Rel(EventSystem, RateConsumer, "consumes\n deposit-rate-messages")
+Rel_R(RateConsumer, SftpFileServer, "экспорт файла ставок")
+Rel(ExternalCallCenter, SftpFileServer, "импорт файла ставок")
+Rel(ExternalCallCenterOperator, ExternalCallCenter, "отображение ставок")
+
+@enduml
