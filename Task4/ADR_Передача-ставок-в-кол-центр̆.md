@@ -30,8 +30,8 @@
 ### <a name="_qmphm5d6rvi3"></a>**Решение**
 Приведите диаграммы контекста и контейнеров в модели C4. Опишите там основные компоненты и интеграции всех элементов решения. 
 
-[Context-DepositRateProcess.puml](Context-DepositRateProcess.puml)
-[Container-DepositRateProcess.puml](Container-DepositRateProcess.puml)
+- [Context-DepositRateProcess.puml](Context-DepositRateProcess.puml)
+- [Container-DepositRateProcess.puml](Container-DepositRateProcess.puml)
 
 Также опишите, какой логикой вы руководствовались в ходе принятия решений и выбора технологий. Не забывайте, что необходимо учесть все функциональные и нефункциональные требования.
 
