@@ -1,0 +1,70 @@
+@startuml
+title Bank Standart Deposit Process Container Diagram
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(CallCenterOperator, "Call Center Operator", "Authorized operator.")
+Person(BackOfficeEmployee, "Back Office Employee", "Aa authorized employee of the bank Standart system.")
+Person(customer, "Customer", "Aa authorized customer of the internet bank Standart system.")
+'System(InternetBankStandartSystem, "InternetBank Environment", "Deposit process")
+System(BankStandartSystem, "Bank Standart System Environment", "Deposit process")
+
+Container_Boundary(BankStandartSystem, "Bank Standart System Environment") {
+'Container_Boundary(InternetBankStandartSystem, "InternetBank Environment") {
+
+    Container(InternetBank, "Интернет-банк", "ASP.NET MVC 4.5", "MS SQL")
+
+    Container(RateMaster, "RateMaster\nПриложение по управлению предложениями депозитов и кредитов", "Java/SpringBoot", "PostgreSQL")
+
+    Container_Boundary(DepositMicroservice, "Deposit Microservice") {
+        Container(APIDepositService, "API Deposit Service", "Java/SpringBoot", "PostgreSQL")
+        ContainerDb(DepositDatabase, "DepositDatabase", "PostgreSQL", "Stores\n deposit-proposal\n deposit-application")
+    }
+'}
+
+'Container_Boundary(BankStandartSystem, "Bank Standart System Environment") {
+
+    Container(BankSite, "Сайт банка", "React.js", "PHP")
+
+    Container(ABS, "АБС", "Delphi", "PL-SQL/Oracle")
+
+    ContainerDb(EventSystem, "[Kafka]", "Message Broker", "topics:\n deposit-application-events\nsms-messages\n ...")
+
+    Container(SMSConsumer, "SMS Consumer", "Java/SpringBoot", "PostgreSQL")
+    Container(SMSgate, "СМС-шлюз", "", "")
+
+    Container(CallCenter, "Система кол-центра", "CRM-микросервисы", "React.js/Java Spring Boot/PostgreSQL")
+}
+
+Person(user, "User", "A not-authorized user.")
+
+System_Ext(ExtTelecomSystem, "External telecom system", "External API")
+
+Rel(CallCenterOperator, CallCenter, "Звонки")
+
+Rel(user, BankSite, "[https]\n/просмотр списка депозитных предложений\n/подача заявки")
+Rel(customer, InternetBank, "[https]\n/просмотр списка депозитных предложений\n/просмотр списка персонализированных депозитных предложений\n/подача заявки")
+
+Rel(InternetBank, APIDepositService,         "GET/POST /api/deposit/ordinary\nGET/POST /api/deposit/personal\nPATCH /api/deposit/confirm")
+Rel(BankSite, APIDepositService,         "GET/POST /api/deposit/ordinary\nPATCH /api/deposit/confirm")
+Rel(CallCenter, APIDepositService,         "GET /api/deposit/ordinary\nGET /api/deposit/ordinary/application\nPATCH /api/deposit/ordinary/approve")
+Rel(BackOfficeEmployee, RateMaster,         "Управление ставками депозитов")
+Rel(RateMaster, APIDepositService,         "CRUD /api/deposit/proposal/ordinary\nCRUD /api/deposit/proposal/personal")
+
+Rel_D(APIDepositService,  DepositDatabase,  "Reads/Writes deposit info")
+Rel_D(APIDepositService,    EventSystem, "publishes\n deposit-application-events sms-messages")
+Rel_D(EventSystem, ABS, "Kafka Connect Sink\n consumes\n deposit-application-events")
+
+Rel(BackOfficeEmployee, ABS, "Подтверждение размещения депозита")
+
+Rel(EventSystem, SMSConsumer, "consumes\n sms-messages")
+Rel(SMSConsumer, SMSgate, "отправка смс новым способом")
+Rel(ABS, EventSystem, "Debezium\n publishes sms-messages")
+Rel(ABS, SMSgate, "отправка смс старым способом")
+Rel(SMSgate, ExtTelecomSystem, "смс")
+
+
+'MovieDatabase -[hidden]down-> ExtOnlineCinema
+'PaymentDatabase -[hidden]down-> ExtPaymentSystem
+
+@enduml

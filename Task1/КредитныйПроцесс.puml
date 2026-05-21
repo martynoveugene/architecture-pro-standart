@@ -1,0 +1,38 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+actor "Клиент\n Банка" as client
+actor "Менеджер\n Фронт Офиса" as managerFO
+participant "АБС" as abs
+actor "Менеджер\n отдела кредитования" as managerCD
+participant "Кредитный\n конвейер" as creditConveyor
+participant "Кредитный\n скоринг" as creditScoring
+participant "Бюро\n кредитных историй" as creditHistory
+
+group Оформление Заявки
+client -> managerFO: бумажное\n заявление
+managerFO -> abs: оформление\n заявки
+abs -->> managerFO: заявка\n оформлена
+managerFO -->> client: заявление\n принято
+end
+
+
+abs ->> creditConveyor: экспорт раз в день\n заявок
+abs ->> creditScoring: экспорт раз в день\n данных о клиентах
+abs ->> creditScoring: экспорт раз в день\n платежей по кредиту
+creditConveyor ->> creditScoring: экспорт\n номеров платежей
+
+group Обработка Заявки
+managerCD -> creditConveyor: запуск расчета оценки
+creditConveyor -> creditScoring: API запрос оценки
+creditScoring -> creditHistory: API запрос\n кредитного отчета
+creditHistory -->> creditScoring: кредитный отчет
+creditScoring -->> creditConveyor: установка кредитной оценки
+managerCD -> creditConveyor: установка решения по кредиту
+end
+
+creditConveyor ->> abs: экспорт раз в день\n решений по заявкам
+
+@enduml

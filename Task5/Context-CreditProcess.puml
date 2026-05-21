@@ -1,0 +1,29 @@
+@startuml
+title Bank Standart Credit Process Container Diagram
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(CallCenterOperator, "Call Center Operator", "Authorized operator.")
+Person(BackOfficeEmployee, "Back Office Employee", "Aa authorized employee of the bank Standart system.")
+Person(FrontOfficeEmployee, "Front Office Employee", "Aa authorized employee of the bank Standart system.")
+Person(customer, "Customer", "Aa authorized customer of the internet bank Standart system.")
+System(BankStandartSystem, "Bank Standart System Environment", "Credit process")
+
+Person(user, "User", "A not-authorized user.")
+
+System_Ext(ExtTelecomSystem, "External telecom system", "External API")
+System_Ext(ExtCreditHistoryBureau, "External Credit History Bureau", "External API")
+
+Rel(CallCenterOperator, BankStandartSystem, "Звонки")
+
+Rel(user, BankStandartSystem, "[https]\n/просмотр списка кредитных предложений\n/подача заявки")
+Rel(customer, BankStandartSystem, "[https]\n/просмотр списка кредитных предложений\n/просмотр списка персонализированных кредитных предложений\n/подача заявки")
+
+Rel(BackOfficeEmployee, BankStandartSystem,       "Управление ставками кредитов")
+
+Rel(FrontOfficeEmployee, BankStandartSystem, "Оформление кредитной заявки")
+
+Rel_D(BankStandartSystem,   ExtTelecomSystem, "смс")
+Rel(BankStandartSystem,    ExtCreditHistoryBureau, "запрос кредитного отчета")
+
+@enduml
