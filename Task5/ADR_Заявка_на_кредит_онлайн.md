@@ -47,7 +47,10 @@
 Диаграммы контекста и контейнеров в модели C4. Описание основных компонент и интеграции всех элементов решения.
 
 - [Context-CreditProcess.puml](Context-CreditProcess.puml)
+- [Context-CreditProcess.png](Context-CreditProcess.png)
+
 - [Container-CreditProcess.puml](Container-CreditProcess.puml)
+- [Container-CreditProcess.png](Container-CreditProcess.png)
 
 
 Описание того, какой логикой автор руководствовался в ходе принятия решений и выбора технологий. Учтены все функциональные и нефункциональные требования.

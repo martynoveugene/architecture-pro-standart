@@ -31,7 +31,10 @@
 Диаграммы контекста и контейнеров в модели C4. Описание основных компонент и интеграции всех элементов решения. 
 
 - [Context-DepositRateProcess.puml](Context-DepositRateProcess.puml)
+- [Context-DepositRateProcess.png](Context-DepositRateProcess.png)
+
 - [Container-DepositRateProcess.puml](Container-DepositRateProcess.puml)
+- [Container-DepositRateProcess.png](Container-DepositRateProcess.png)
 
 Описание того, какой логикой автор руководствовался в ходе принятия решений и выбора технологий. Учтены все функциональные и нефункциональные требования.
 
