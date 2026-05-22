@@ -49,6 +49,11 @@
 - [Context-CreditProcess.puml](Context-CreditProcess.puml)
 - [Container-CreditProcess.puml](Container-CreditProcess.puml)
 
+```
+![Container-CreditProcess.puml](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://github.com/martynoveugene/architecture-pro-standart/blob/main/Task5/Container-CreditProcess.puml)
+``` 
+
+
 Описание того, какой логикой автор руководствовался в ходе принятия решений и выбора технологий. Учтены все функциональные и нефункциональные требования.
 
 ### <a name="_bjrr7veeh80c"></a>**Альтернативы**
